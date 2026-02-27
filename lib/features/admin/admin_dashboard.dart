@@ -105,7 +105,7 @@ class AdminDashboard extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            Row(
+            const Row(
               children: [
                 Expanded(
                   child: _StatCard(
@@ -115,7 +115,7 @@ class AdminDashboard extends StatelessWidget {
                     color: Colors.indigo,
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: _StatCard(
                     icon: Icons.people,
@@ -127,7 +127,7 @@ class AdminDashboard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            Row(
+            const Row(
               children: [
                 Expanded(
                   child: _StatCard(
@@ -137,7 +137,7 @@ class AdminDashboard extends StatelessWidget {
                     color: Colors.orange,
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: _StatCard(
                     icon: Icons.campaign,
@@ -193,22 +193,22 @@ class AdminDashboard extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            _ActivityItem(
+            const _ActivityItem(
               icon: Icons.event_available,
               title: 'Tech Symposium 2026 created',
               time: '2 hours ago',
             ),
-            _ActivityItem(
+            const _ActivityItem(
               icon: Icons.person_add,
               title: '5 new registrations for Cultural Night',
               time: '4 hours ago',
             ),
-            _ActivityItem(
+            const _ActivityItem(
               icon: Icons.campaign,
               title: 'Venue change announcement posted',
               time: '1 day ago',
             ),
-            _ActivityItem(
+            const _ActivityItem(
               icon: Icons.edit,
               title: 'Tech Night event updated',
               time: '2 days ago',
