@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../../core/models/announcement_model.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/models/announcement_model.dart';
 import '../../core/services/database/firestore_service.dart';
+import '../../core/services/announcement_service.dart';
 
 class AnnouncementsScreen extends StatefulWidget {
   const AnnouncementsScreen({super.key});
@@ -23,10 +25,13 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
     _messageController.dispose();
     super.dispose();
   }
+  final _titleController = TextEditingController();
+  final _messageController = TextEditingController();
 
   void _showCreateDialog() {
     _titleController.clear();
     _messageController.clear();
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -79,6 +84,25 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
                   }
                 }
               }
+
+            onPressed: () {
+              final title = _titleController.text.trim();
+              final message = _messageController.text.trim();
+              if (title.isEmpty || message.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please fill all fields')),
+                );
+                return;
+              }
+              AnnouncementService.instance.addAnnouncement(
+                title: title,
+                message: message,
+              );
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Announcement posted!')),
+              );
+              setState(() {}); // Refresh local view
             },
             child: const Text('Post'),
           ),
@@ -95,6 +119,8 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
       appBar: AppBar(title: const Text('Announcements')),
       body: StreamBuilder<List<AnnouncementModel>>(
         stream: _firestoreService.getAnnouncements(),
+      body: StreamBuilder<List<Announcement>>(
+        stream: AnnouncementService.instance.getAnnouncementsStream(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -103,10 +129,24 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
 
+
           final announcements = snapshot.data ?? [];
 
           if (announcements.isEmpty) {
             return const Center(child: Text('No announcements yet.'));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.campaign_outlined, size: 80, color: Colors.grey[300]),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No announcements yet',
+                    style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+                  ),
+                ],
+              ),
+            );
           }
 
           return ListView.builder(
@@ -135,6 +175,8 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
                           ),
                           Text(
                             DateFormat('MMM dd').format(ann.createdAt),
+
+                            DateFormat('MMM dd').format(ann.date),
                             style: const TextStyle(
                               color: Colors.grey,
                               fontSize: 12,
@@ -147,6 +189,21 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
                         ann.message,
                         style: TextStyle(color: Colors.grey[800], height: 1.4),
                       ),
+                      if (isAdmin) ...[
+                        const SizedBox(height: 8),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            icon: const Icon(Icons.delete_outline,
+                                color: Colors.red, size: 20),
+                            onPressed: () {
+                              AnnouncementService.instance
+                                  .deleteAnnouncement(ann.id);
+                              setState(() {});
+                            },
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),

@@ -13,6 +13,7 @@ class EventModel {
   final String organizer;
   final String createdBy;
   final DateTime createdAt;
+  final List<String> registeredUsers;
 
   EventModel({
     required this.id,
@@ -27,6 +28,7 @@ class EventModel {
     required this.organizer,
     required this.createdBy,
     required this.createdAt,
+    this.registeredUsers = const [],
   });
 
   Map<String, dynamic> toMap() {
